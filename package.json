@@ -1,0 +1,19 @@
+{
+  "name": "welten",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:michielbdejong/welten.git"
+  },
+  "dependencies": {
+    "irc": "*",
+    "imap": "*",
+    "util": "*",
+    "sendgrid": "*",
+    "twitter": "*",
+    "sockjs": "*",
+    "connect": "*",
+    "mkdirp": "*",
+    "feedparser": "*"
+  }
+}
