@@ -2,9 +2,9 @@ var fs = require('fs');
 module.exports = {
   dispatcher: {
     https: {
-      key: fs.readFileSync('./tls/tls.key'), 
-      cert: fs.readFileSync('./tls/tls.cert'), 
-      ca: fs.readFileSync('./tls/chain.pem')
+      key: fs.readFileSync('./data/tls/tls.key'), 
+      cert: fs.readFileSync('./data/tls/tls.cert'), 
+      ca: fs.readFileSync('./data/tls/chain.pem')
     },
     port: 4272,
     token: '...',
@@ -49,9 +49,9 @@ module.exports = {
   },
   remotestorage: {
     https: {
-      key: fs.readFileSync('./tls/tls.key'),
-      cert: fs.readFileSync('./tls/tls.cert'),
-      ca: fs.readFileSync('./tls/chain.pem')
+      key: fs.readFileSync('./data/tls/tls.key'),
+      cert: fs.readFileSync('./data/tls/tls.cert'),
+      ca: fs.readFileSync('./data/tls/chain.pem')
     }
     port: 8012,
     password: '...'
@@ -60,6 +60,6 @@ module.exports = {
     port: 8080,//i'm running this as http behind a https-offloading proxy.
                //but if you want run it as https directly, edit the file lib/www.js
                //and make it more like lib/remotestorage.js, should be trivial
-    contentDir: './public_html'
+    contentDir: './data/public_html'
   }
 };
