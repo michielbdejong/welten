@@ -1,5 +1,6 @@
 var sockjs = require('sockjs'),
     fs = require('fs'),
+    mkdirp = require('mkdirp'),
     config = require('./data/config').dispatcher,
     platforms = {};
 
@@ -13,6 +14,16 @@ fs.readdir('./lib/', function(err, data) {
       if(typeof(platforms[platform].on)=='function') {
         platforms[platform].on('message', (function(p) {
           return function(msg) {
+            if(msg.timestamp) {
+              var dir = './data/'+p+'/'
+                +msg.timestamp.toString().substring(0,4)+'/'
+                +msg.timestamp.toString().substring(4,7)+'/';
+              mkdirp(dir, function(err) {
+                if(!err) {
+                  fs.writeFile(dir+msg.timestamp.toString().substring(7), JSON.stringify(msg));
+                }
+              });   
+            }
             for(var j=0;j<clients.length;j++) {
               if(clients[j] && typeof(clients[j].write)=='function') {
                 clients[j].write(JSON.stringify({platform: p, type: 'incoming', message: msg}));

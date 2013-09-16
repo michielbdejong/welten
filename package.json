@@ -14,6 +14,7 @@
     "sockjs": "*",
     "connect": "*",
     "mkdirp": "*",
-    "feedparser": "*"
+    "feedparser": "*",
+    "mailparser": "*"
   }
 }
