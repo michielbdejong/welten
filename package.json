@@ -12,7 +12,7 @@
     "sendgrid": "*",
     "twitter": "*",
     "sockjs": "*",
-    "connect": "*",
+    "node-static": "*",
     "mkdirp": "*",
     "feedparser": "*",
     "mailparser": "*"

@@ -1,13 +1,14 @@
 var fs = require('fs');
 module.exports = {
   dispatcher: {
+    port: 4272,
+    token: '...',
+    //this will cause it to open a secure WebSocket (wss://), leave it out to get a standard/insecure one (ws://):
     https: {
       key: fs.readFileSync('./data/tls/tls.key'), 
       cert: fs.readFileSync('./data/tls/tls.cert'), 
       ca: fs.readFileSync('./data/tls/chain.pem')
-    },
-    port: 4272,
-    token: '...',
+    }
   },
   facebook: {
     access_token: '...'
@@ -52,14 +53,17 @@ module.exports = {
       key: fs.readFileSync('./data/tls/tls.key'),
       cert: fs.readFileSync('./data/tls/tls.cert'),
       ca: fs.readFileSync('./data/tls/chain.pem')
-    }
+    },
     port: 8012,
     password: '...'
   },
   www: {
-    port: 8080,//i'm running this as http behind a https-offloading proxy.
-               //but if you want run it as https directly, edit the file lib/www.js
-               //and make it more like lib/remotestorage.js, should be trivial
-    contentDir: './data/public_html'
+    contentDir: './data/public_html',
+    //this will cause it to listen on port 443 as well, leave it out for just port 80:
+    https: {
+      key: fs.readFileSync('./data/tls/tls.key'),
+      cert: fs.readFileSync('./data/tls/tls.cert'),
+      ca: fs.readFileSync('./data/tls/chain.pem')
+    }
   }
 };
