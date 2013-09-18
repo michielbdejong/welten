@@ -15,7 +15,7 @@ fs.readdir('./lib/', function(err, data) {
         platforms[platform].on('message', (function(p) {
           return function(msg) {
             if(msg.timestamp) {
-              var dir = './data/'+p+'/'
+              var dir = './data/inbox/'+p+'/'
                 +msg.timestamp.toString().substring(0,4)+'/'
                 +msg.timestamp.toString().substring(4,7)+'/';
               mkdirp(dir, function(err) {
