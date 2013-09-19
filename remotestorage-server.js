@@ -87,13 +87,13 @@ function serveGet(path, origin, res) {
 
 function serveDelete(path, origin, res) {
   fs.unlink(path, function(err) {
-    respondJson((err?500:200), null, origin);
+    respondJson(res, (err?500:200), null, origin);
   });
 }
 
-function serveDelete(path, content, origin, res) {
+function servePut(path, content, origin, res) {
   fs.writeFile(path, content, function(err) {
-    respondJson((err?500:200), null, origin);
+    respondJson(res, (err?500:200), null, origin);
   });
 }
 
