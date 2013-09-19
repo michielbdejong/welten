@@ -2,16 +2,21 @@ var fs = require('fs'),
     url=require('url'),
     crypto=require('crypto'),
     xattr=require('xattr-async'),
+    mkdirp=require('mkdirp'),
     dataDir;//to be set when requiring this module
 
 function doWrite(path, contentType, content, cb) {
-  console.log('writing', path, contentType, content);
-  fs.writeFile(path, content, function(err) {
-    if(err) {
-      cb(err);
-    } else {
-      xattr.set(path, 'Content-Type', contentType, cb);
-    }
+  var parts = path.split('/');
+  parts.pop();
+  var dirname = parts.join('/');
+  mkdirp(dirname, function(err1) {
+    fs.writeFile(path, content, function(err2) {
+      if(err2) {
+        cb(err2);
+      } else {
+        xattr.set(path, 'Content-Type', contentType, cb);
+      }
+    });
   });
 }
 
@@ -58,19 +63,19 @@ function perms(authorizationHeader, path, origin, isGet, res) {
   }
   var scopePaths, token = authorizationHeader.substring('Bearer '.length);
   try {
-    scopePaths = JSON.parse(fs.readFileSync('/apps/'+token));
+    scopePaths = JSON.parse(fs.readFileSync(makePath('/apps/'+token)));
   } catch(e) {//Bearer token unknown
     respondStatus(res, 401, origin);
     return true;
   }
   for(var i in scopePaths) {
-    if((path.substring(i.length)==i)
+    if((path.substring(0, i.length)==i)
         && (isGet || scopePaths[i]=='rw')) {
       return false;
     }
   }
   //Bearer token gives no access
-  respondStatus(res, 402, origin);
+  respondStatus(res, 401, origin);
   return true;
 }
 
@@ -85,7 +90,8 @@ function getCurrEtag(path) {
 }
 
 function ifMatch(etag, path, origin, isGet, res) {
-  if(getCurrEtag(path)!=etag) {
+  var currEtag = getCurrEtag(path);
+  if(currEtag!=etag) {
     respondStatus(res, (isGet?304:412), origin, currEtag);
     return true;
   }
@@ -148,7 +154,6 @@ function serveGetDir(path, origin, res) {
 function serveGet(path, origin, res) {
   fs.stat(path, function(err1, stat) {
     if(err1) {
-      console.log('stat error', path, err1);
       respondStatus(res, 404, origin);
     } else {
       if(path.substr(-1)=='/' && stat.isDirectory()) {
@@ -158,7 +163,6 @@ function serveGet(path, origin, res) {
           respondContent(res, data, origin, stat.mtime.getTime().toString(), 'application/octet-stream');
         });
       } else {
-        console.log('wrong inode type', path, err1);
         respondStatus(res, 404, origin);
       }
     }
