@@ -105,13 +105,29 @@ function makePath(str) {
   return './data/'+str;
 }
 
+function ifNoneMatch(etags, path, origin, isGet, res) {
+  var stat;
+  try {
+    stat = fs.statSync(path);
+  } catch(e) {//probably a 404
+    return false;
+  }
+  var currEtag = stat.mtime.getTime().toString();
+  for(var i=0; i<etags.length; i++) {
+    if(currEtag==etags[i]) {
+      respondStatus(res, (isGet?304:412), origin, currEtag);
+      return true;
+    } 
+  }
+}
+
 function serve(req, res) {
   var path = makePath(url.parse(req.url, true).pathname),
     origin = req.headers.origin;
   if(req.method=='OPTIONS') { serveOptions(origin, res); return; }
-//  if(perms(req.headers.authorization, path, (req.method=='GET'), res)) { return; }
-//  if(ifNoneMatch(req.headers['if-none-match'], (req.method=='GET'), res)) { return; }
-//  if(ifMatch(req.headers['if-match'], (req.method=='GET'), res)) { return; }
+//  if(perms(req.headers.authorization, path, origin, (req.method=='GET'), res)) { return; }
+  if(ifNoneMatch([req.headers['if-none-match']], path, origin, (req.method=='GET'), res)) { return; }
+//  if(ifMatch(req.headers['if-match'], path, origin,(req.method=='GET'), res)) { return; }
   if(req.method=='GET') { serveGet(path, origin, res); return; }
   if(req.method=='DELETE') { serveDelete(path, origin, res); return; }
   if(req.method=='PUT') {
@@ -124,7 +140,7 @@ function serve(req, res) {
     });
     return; 
   }
-  respondStatus(res, origin, 405);
+  respondStatus(res, 405, origin);
 }
 
 function auth(query, cb) {
