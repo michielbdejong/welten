@@ -15,6 +15,7 @@
     "node-static": "*",
     "mkdirp": "*",
     "feedparser": "*",
-    "mailparser": "*"
+    "mailparser": "*",
+    "xattr-async": "*"
   }
 }

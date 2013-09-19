@@ -30,8 +30,8 @@ function makeScopePaths(scopes) {
     if(thisScopeParts[0]=='root') {
       scopePaths[makePath('')]=thisScopeParts[1];
     } else {
-      scopePaths[makePath(thisScopeParts[0]+'/']=thisScopeParts[1];
-      scopePaths[makePath('public/'+thisScopeParts[0]+'/']=thisScopeParts[1];
+      scopePaths[makePath(thisScopeParts[0]+'/')]=thisScopeParts[1];
+      scopePaths[makePath('public/'+thisScopeParts[0]+'/')]=thisScopeParts[1];
     }
   }
   return scopePaths;
