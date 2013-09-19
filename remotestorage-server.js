@@ -58,8 +58,30 @@ function respondStatus(res, status, origin, etag) {
 }
 
 function serveGet(path, origin, res) {
-  fs.readFile(path, function(err, data) {
-    respondContent(res, data, origin);
+  fs.stat(path, function(err1, stat) {
+    if(err1) {
+      console.log('stat error', path, err1);
+      respondStatus(res, 404, origin);
+    } else {
+      if(path.substr(-1)=='/' && stat.isDirectory()) {
+        fs.readdir(path, function(err2, listing) {
+          var i, etags={}, thisStat;
+          for(i=0; i<listing.length; i++) {
+            thisStat = fs.statSync(path+listing[i]);
+            etags[listing[i] + (thisStat.isDirectory()?'/':'')] = thisStat.mtime.getTime().toString();
+          }
+          respondContent(res, JSON.stringify(etags), origin, stat.mtime.getTime().toString(), 'application/json');
+        });
+      } else if(path.substr(-1)!='/' && stat.isFile()) {
+        fs.readFile(path, function(err2, data) {
+          //console.log(path, err1, err2, data);
+          respondContent(res, data, origin, stat.mtime.getTime().toString(), 'application/octet-stream');
+        });
+      } else {
+        console.log('wrong inode type', path, err1);
+        respondStatus(res, 404, origin);
+      }
+    }
   });
 }
 
@@ -103,6 +125,10 @@ function serve(req, res) {
     return; 
   }
   respondStatus(res, origin, 405);
+}
+
+function auth(query, cb) {
+  cb(null, query.redirect_uri+'#access_token=anything', false);
 }
 
 module.exports = function(setDataDir) {
