@@ -5,6 +5,7 @@ var fs = require('fs'),
     dataDir;//to be set when requiring this module
 
 function doWrite(path, contentType, content, cb) {
+  console.log('writing', path, contentType, content);
   fs.writeFile(path, content, function(err) {
     if(err) {
       cb(err);
@@ -15,7 +16,10 @@ function doWrite(path, contentType, content, cb) {
 }
 
 function makePath(str) {
-  return './data/'+str;//FIXME use proper protection against relative '../' paths
+  while(str.substring(0,1)=='.' || str.substring(0,1)=='/') {
+   str = str.substring(1);
+  }
+  return './data/'+str;
 }
 
 function makeScopePaths(scopes) {
@@ -41,7 +45,7 @@ function createToken(scopes, cb) {
   crypto.randomBytes(48, function(ex, buf) {
     var token = buf.toString('hex');
     var scopePaths = makeScopePaths(scopes);
-    doWrite('/apps/'+token, 'application/json', JSON.stringify(scopePaths), function(err) {
+    doWrite(makePath('/apps/'+token), 'application/json', JSON.stringify(scopePaths), function(err) {
       cb(token);
     });
   });
@@ -200,7 +204,9 @@ function serve(req, res) {
 }
 
 function auth(query, cb) {
-  cb(null, query.redirect_uri+'#access_token=anything', false);
+  createToken(query.scope.split(' '), function(token) {
+    cb(null, query.redirect_uri+'#access_token='+encodeURIComponent(token), false);
+  });
 }
 
 module.exports = function(setDataDir) {
