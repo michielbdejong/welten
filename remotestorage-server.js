@@ -90,10 +90,12 @@ function getCurrEtag(path) {
 }
 
 function ifMatch(etag, path, origin, isGet, res) {
-  var currEtag = getCurrEtag(path);
-  if(currEtag!=etag) {
-    respondStatus(res, (isGet?304:412), origin, currEtag);
-    return true;
+  if(etag) {
+    var currEtag = getCurrEtag(path);
+    if(currEtag!=etag) {
+      respondStatus(res, (isGet?304:412), origin, currEtag);
+      return true;
+    }
   }
 }
 
@@ -140,7 +142,7 @@ function respondStatus(res, status, origin, etag) {
   res.end();
 }
 
-function serveGetDir(path, origin, res) {
+function serveGetDir(path, stat, origin, res) {
   fs.readdir(path, function(err2, listing) {
     var i, etags={}, thisStat;
     for(i=0; i<listing.length; i++) {
@@ -157,7 +159,7 @@ function serveGet(path, origin, res) {
       respondStatus(res, 404, origin);
     } else {
       if(path.substr(-1)=='/' && stat.isDirectory()) {
-        serveGetDir(path, origin, res);
+        serveGetDir(path, stat, origin, res);
       } else if(path.substr(-1)!='/' && stat.isFile()) {
         fs.readFile(path, function(err2, data) {
           respondContent(res, data, origin, stat.mtime.getTime().toString(), 'application/octet-stream');
