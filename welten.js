@@ -25,7 +25,7 @@ for(var i in config) {
       platforms[i].on('message', (function(p) {
         return function(msg) {
           if(msg.timestamp) {
-            var dir = './data/inbox/'+p+'/'
+            var dir = dataDir+'inbox/'
               +msg.timestamp.toString().substring(0,4)+'/'
               +msg.timestamp.toString().substring(4,7)+'/';
             mkdirp(dir, function(err) {
