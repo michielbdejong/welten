@@ -22,7 +22,7 @@ for(var i in config) {
   if(config[i] && i != 'dispatcher') {
     platforms[i]=require('./lib/'+i)(config[i]);
     if(typeof(platforms[i].on)=='function') {
-      platforms[platform].on('message', (function(p) {
+      platforms[i].on('message', (function(p) {
         return function(msg) {
           if(msg.timestamp) {
             var dir = './data/inbox/'+p+'/'
@@ -40,7 +40,7 @@ for(var i in config) {
             }
           }
         };
-      })(platform));
+      })(i));
     }
     console.log('added platform: '+i);
   }
@@ -52,10 +52,18 @@ function dispatchCommand(obj, cb) {
     cb({error: 'obj.target should be a string', object: obj});
   } else {
     var platformAndTarget = obj.target.split(':');
-    if((obj.token == config.dispatcher.token) && (platforms[platformAndTarget[0]]) && (platforms[platformAndTarget[0]][obj.verb]))  {
-      platforms[platformAndTarget[0]][obj.verb](obj.object, platformAndTarget[1], cb);
+    if(obj.token == config.dispatcher.token) {
+      if(platforms[platformAndTarget[0]]) {
+        if(platforms[platformAndTarget[0]][obj.verb])  {
+          platforms[platformAndTarget[0]][obj.verb](obj.object, platformAndTarget[1], cb);
+        } else {
+          cb({error: 'cannot dispatch that', command: obj, verbs: platforms[platformAndTarget[0]]});
+        }
+      } else {
+        cb({error: 'cannot dispatch that', command: obj, platforms: platforms});
+      }
     } else {
-      cb({error: 'cannot dispatch that', object: obj});
+      cb({error: 'cannot dispatch that', token: obj.token});
     }
   }
 }
@@ -82,7 +90,7 @@ sockServer.on('connection', function(conn) {
     var obj;
     try { obj = JSON.parse(chunk); } catch(e) {}
     if(typeof(obj) == 'object') {
-      dispatchComand(obj, function(res) {
+      dispatchCommand(obj, function(res) {
         console.log('writing back', res);
         conn.write(JSON.stringify(res));
       });
