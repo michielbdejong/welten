@@ -24,7 +24,7 @@ function makePath(str) {
   while(str.substring(0,1)=='.' || str.substring(0,1)=='/') {
    str = str.substring(1);
   }
-  return './data/'+str;
+  return dataDir+str;
 }
 
 function makeScopePaths(scopes) {
