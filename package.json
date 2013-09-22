@@ -16,6 +16,7 @@
     "mkdirp": "*",
     "feedparser": "*",
     "mailparser": "*",
-    "xattr-async": "*"
+    "xattr-async": "*",
+    "querystring": "*"
   }
 }
