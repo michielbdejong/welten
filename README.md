@@ -1,7 +1,7 @@
 # Sockethub-welten:
-## Putting the persistence into sockethub
+## Adding persistence to sockethub
 
-This is an experiment that combines sockethub with persistence
+This is an experimental companion to sockethub which adds persistence:
 
 * keeping user credentials stored when the user is not there
 * listening on TCP ports even when the user is not there
@@ -9,9 +9,9 @@ This is an experiment that combines sockethub with persistence
 
 # To run:
     npm install
-    mkdir data/
-    cp config.sample.js data/config.js # and edit
-    node welten.js
+    cp -r data-sample/ data/
+    # now edit data/config.js
+    node welten.js ./data/
 
 If you don't have a TLS cert, you can run over http on localhost (just remove the whole 'https' config entry), or generate a self-signed one with:
 

@@ -1,6 +1,10 @@
 //var fs = require('fs');
 module.exports = function(dataDir) {
   return {
+    sockethub: {
+      url: 'wss://example.com:10550/sockethub',
+      secret: '...',
+    },
     dispatcher: {
       port: 4272,
       token: '...',
@@ -68,6 +72,13 @@ module.exports = function(dataDir) {
 //        cert: fs.readFileSync(dataDir+'tls/tls.cert'),
 //        ca: fs.readFileSync(dataDir+'tls/chain.pem')
 //      },
+//    'post-me-anything': {
+//      https: {
+//        key: fs.readFileSync(dataDir+'tls/tls.key'), 
+//        cert: fs.readFileSync(dataDir+'tls/tls.cert'), 
+//        ca: fs.readFileSync(dataDir+'tls/chain.pem'),
+//      },
+//    },
     },
   };
 };
