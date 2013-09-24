@@ -24,16 +24,23 @@ for(var i in config) {
     if(typeof(platforms[i].on)=='function') {
       platforms[i].on('message', (function(p) {
         return function(msg) {
-          if(msg.timestamp) {
-            var dir = dataDir+'inbox/'
-              +msg.timestamp.toString().substring(0,4)+'/'
-              +msg.timestamp.toString().substring(4,7)+'/';
-            mkdirp(dir, function(err) {
-              if(!err) {
-                fs.writeFile(dir+msg.timestamp.toString().substring(7), JSON.stringify(msg));
-              }
-            });   
+          if(typeof(msg)!='object' || Array.isArray(msg)) {
+            msg = {
+              message: msg
+            };
           }
+          if(!msg.timestamp) {
+            msg.timestamp = (new Date()).getTime();
+          }
+          console.log('logging message', msg);
+          var dir = dataDir+'inbox/'
+            +msg.timestamp.toString().substring(0,4)+'/'
+            +msg.timestamp.toString().substring(4,7)+'/';
+          mkdirp(dir, function(err) {
+            if(!err) {
+              fs.writeFile(dir+msg.timestamp.toString().substring(7), JSON.stringify(msg));
+            }
+          });   
           for(var j=0;j<clients.length;j++) {
             if(clients[j] && typeof(clients[j].write)=='function') {
               clients[j].write(JSON.stringify({platform: p, type: 'incoming', message: msg}));
