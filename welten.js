@@ -20,6 +20,7 @@ try {
 // load platforms:
 for(var i in config) {
   if(config[i] && i != 'dispatcher') {
+    console.log('loading '+i+'...');
     platforms[i]=require('./lib/'+i)(config[i], platforms['sockethub']);
     if(typeof(platforms[i].on)=='function') {
       platforms[i].on('message', (function(p) {
