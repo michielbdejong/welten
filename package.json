@@ -17,6 +17,7 @@
     "feedparser": "*",
     "mailparser": "*",
     "xattr-async": "*",
-    "querystring": "*"
+    "querystring": "*",
+    "websocket": "*"
   }
 }

@@ -20,7 +20,7 @@ try {
 // load platforms:
 for(var i in config) {
   if(config[i] && i != 'dispatcher') {
-    platforms[i]=require('./lib/'+i)(config[i]);
+    platforms[i]=require('./lib/'+i)(config[i], platforms['sockethub']);
     if(typeof(platforms[i].on)=='function') {
       platforms[i].on('message', (function(p) {
         return function(msg) {
@@ -52,7 +52,7 @@ for(var i in config) {
     console.log('added platform: '+i);
   }
 }
- 
+
 function dispatchCommand(obj, cb) {
   console.log('dispatching', obj);
   if((typeof(obj) != 'object') || (typeof(obj.target) != 'string')) {
