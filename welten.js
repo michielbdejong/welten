@@ -56,19 +56,30 @@ for(var i in config) {
 
 function dispatchCommand(obj, cb) {
   console.log('dispatching', obj);
-  if((typeof(obj) != 'object') || (typeof(obj.target) != 'string')) {
-    cb({error: 'obj.target should be a string', object: obj});
+  if(typeof(obj) != 'object') {
+    cb({error: 'obj should be an object', object: obj});
   } else {
-    var platformAndTarget = obj.target.split(':');
-    if(obj.token == config.dispatcher.token) {
-      if(platforms[platformAndTarget[0]]) {
-        if(platforms[platformAndTarget[0]][obj.verb])  {
-          platforms[platformAndTarget[0]][obj.verb](obj.object, platformAndTarget[1], cb);
-        } else {
-          cb({error: 'cannot dispatch that', command: obj, verbs: platforms[platformAndTarget[0]]});
-        }
+    if(typeof(obj.target) != 'object') {
+      if(typeof(obj.target) == 'string') {
+        var platformAndTarget = obj.target.split(':');
+        obj.target = {};
+        obj.target[platformAndTarget[0]] = platformAndTarget[1];
       } else {
-        cb({error: 'cannot dispatch that', command: obj, platforms: platforms});
+        cb({error: 'obj.target should be an object or a string', object: obj});
+        return;
+      }
+    }
+    if(obj.token == config.dispatcher.token) {
+      for(var platform in obj.target) {
+        if(platforms[platform]) {
+          if(platforms[platform][obj.verb])  {
+            platforms[platform][obj.verb](obj.object, obj.target[platform], cb);
+          } else {
+            cb({error: 'cannot dispatch that', command: obj, verbs: platforms[platform]});
+          }
+        } else {
+          cb({error: 'cannot dispatch that', command: obj, platforms: platforms});
+        }
       }
     } else {
       cb({error: 'cannot dispatch that', token: obj.token});
