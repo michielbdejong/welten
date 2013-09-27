@@ -72,6 +72,9 @@ function dispatchCommand(obj, cb) {
     if(obj.token == config.dispatcher.token) {
       for(var platform in obj.target) {
         if(platforms[platform]) {
+          if(!obj.verb) {
+            obj.verb = 'send';
+          }
           if(platforms[platform][obj.verb])  {
             platforms[platform][obj.verb](obj.object, obj.target[platform], cb);
           } else {
