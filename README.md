@@ -1,4 +1,7 @@
 # Sockethub-welten:
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/michielbdejong/welten.svg)](https://greenkeeper.io/)
+
 ## Adding persistence to sockethub
 
 This is an experimental companion to sockethub which adds persistence:
